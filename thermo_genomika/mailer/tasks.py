@@ -11,14 +11,17 @@ def mail(thermo_info, local, temperature):
         situation = "ALARME !"
         recipient_list = Recipient.objects.filter(
             is_active=True).values_list('email', flat=True)
-        send_mail(local, temperature, situation, recipient_list)
+        if len(recipient_list) > 0:
+            send_mail(local, temperature, situation, recipient_list)
+
+        else:
+            email_log = "No e-mails no send"
         MailLog.objects.create(
             local=local,
             temperature=temperature,
             situation=situation,
             recipient_list=', '.join(recipient_list)
         )
-
     else:
         email_log = ""
         return email_log

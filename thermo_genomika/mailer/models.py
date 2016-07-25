@@ -16,8 +16,8 @@ class MailLog(models.Model):
         verbose_name="Date", default=timezone.now)
 
     class Meta:
-        verbose_name = (u'Mails Logs')
-        verbose_name_plural = (u"Mail Log")
+        verbose_name = (u'Mails Log')
+        verbose_name_plural = (u"Mail Logs")
 
 
 class Recipient(models.Model):
@@ -25,5 +25,5 @@ class Recipient(models.Model):
     is_active = models.BooleanField(verbose_name='Is active ?', default=False)
 
     class Meta:
-        verbose_name = (u'Recipients')
-        verbose_name_plural = (u"Recipient")
+        verbose_name = (u'Recipient')
+        verbose_name_plural = (u"Recipients")
