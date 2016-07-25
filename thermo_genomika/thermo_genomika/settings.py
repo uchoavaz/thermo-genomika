@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catcher',
+    'mailer',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -80,12 +81,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'thermo_genomika',
         'USER': 'postgres',
-        'PASSWORD': 'g3n0m1k@',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'notificacoes@genomika.com.br'
+EMAIL_HOST_PASSWORD = 'g3n0m1k@'
+EMAIL_PORT = 587
+CONTACT_EMAIL = 'notificacoes@genomika.com.br'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
