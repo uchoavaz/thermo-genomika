@@ -12,7 +12,11 @@ def mail(thermo_info, local, temperature):
         recipient_list = Recipient.objects.filter(
             is_active=True).values_list('email', flat=True)
         if len(recipient_list) > 0:
-            send_mail(local, temperature, situation, recipient_list)
+            send_mail(
+                thermo_info.capture_date,
+                local, temperature,
+                situation,
+                recipient_list)
 
         else:
             email_log = "No e-mails no send"

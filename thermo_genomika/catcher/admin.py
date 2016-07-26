@@ -6,7 +6,7 @@ from .models import ThermoLog
 
 
 class ThermoInfoAdmin(admin.ModelAdmin):
-    search_fields = ['local', 'capture_date', 'temperature']
+    search_fields = ['local', 'capture_date', 'temperature', 'device_ip__ip']
     list_display = (
         'temperature',
         'local',

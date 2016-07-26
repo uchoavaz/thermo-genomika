@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catcher',
     'mailer',
+    'core',
 ]
 
 MIDDLEWARE_CLASSES = [

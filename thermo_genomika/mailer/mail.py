@@ -6,7 +6,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 
-def send_mail_template(subject, template_name, context, recipient_list, from_email, fail_silently=False):
+def send_mail_template(
+        subject,
+        template_name,
+        context, recipient_list, from_email, fail_silently=False):
 
     message_html = render_to_string(template_name, context)
 
@@ -20,8 +23,10 @@ def send_mail_template(subject, template_name, context, recipient_list, from_ema
     email.send(fail_silently=fail_silently)
 
 
-def send_mail(local, temperatura, situation, recipient):
-    subject = u"Contato Thermo Genomika - {0} - Local: {1}".format(situation, local)
+def send_mail(date, local, temperatura, situation, recipient):
+    date = date.strftime(u'%Y-%d-%m às %H:%M')
+    subject = u"Contato Thermo Genomika - {0} - Local: {1} - {2}".format(
+        situation, local, date)
     context = {
         'local': local,
         'temperature': temperatura,
