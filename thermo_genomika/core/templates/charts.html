@@ -1,57 +1,61 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>Highcharts Example</title>
 
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-		<style type="text/css">
-${demo.css}
-		</style>
-		<script type="text/javascript">
-$(function () {
-    $('#container').highcharts({
-        chart: {
-            type: 'line'
-        },
-        title: {
-            text: 'Monthly Average Temperature'
-        },
-        subtitle: {
-            text: 'Source: WorldClimate.com'
-        },
-        xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        },
-        yAxis: {
+{% extends 'menu.html' %}
+{% load static %}
+
+
+{% block content %}
+<script type="text/javascript">
+    $(function () {
+        var date_list = {{date_list|safe}}
+        var temp_list = {{temp_list|safe}}
+
+        $('#container').highcharts({
+            chart: {
+                type: 'line'
+            },
             title: {
-                text: 'Temperature (°C)'
-            }
-        },
-        plotOptions: {
-            line: {
-                dataLabels: {
-                    enabled: true
-                },
-                enableMouseTracking: false
-            }
-        },
-        series: [{
-            name: 'Tokyo',
-            data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-        }, {
-            name: 'London',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-        }]
+                text: 'Registro de Temperatura'
+            },
+            subtitle: {
+                text: '{{room}}'
+            },
+            xAxis: {
+                categories: date_list
+            },
+            yAxis: {
+                title: {
+                    text: 'Temperatura (°C)'
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: false
+                }
+            },
+            series: [{
+                name: '{{room}}',
+                data: temp_list
+            }]
+        });
     });
-});
-		</script>
-	</head>
-	<body>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+</script>
 
-<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div class="container">
+    <div class="col-sm-3 col-sm-4">
+        <label for="exampleInputEmail1">Data de início</label>
+        <input type="text" class="form-control" id="start_date" placeholder="Text input">
+        <label for="exampleInputEmail1">Data de fim</label>
+        <input type="text" class="form-control" placeholder="Text input">
+        <br>
+        <br>
+    </div>
+</div>
+<div class="container">
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
-	</body>
-</html>
+</div>
+
+{% endblock %}

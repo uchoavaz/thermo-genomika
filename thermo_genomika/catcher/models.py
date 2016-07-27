@@ -12,6 +12,7 @@ MEASURE_CHOICES = (
 
 )
 
+
 class AllowedAddress(models.Model):
     ip = models.CharField(
         verbose_name="IP",
@@ -34,6 +35,7 @@ class AllowedAddress(models.Model):
 
     def __unicode__(self):
         return self.ip
+
 
 class ThermoInfo(models.Model):
     temperature = models.FloatField(verbose_name="Temperature")
@@ -60,6 +62,7 @@ class ThermoInfo(models.Model):
         string = string + ":" + self.local
 
         return string
+
 
 class ThermoLog(models.Model):
     request = models.TextField(verbose_name="Request")
