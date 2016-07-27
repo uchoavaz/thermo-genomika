@@ -25,24 +25,23 @@ class AllowedAddress(models.Model):
         verbose_name='Maximum temperature permitted', default=20.0)
     days_to_delete = models.IntegerField(
         verbose_name='Days to delete', default=30)
+    local = models.CharField(
+        verbose_name="Local", max_length=150, unique=True, default='')
 
     class Meta:
         verbose_name = (u'Allowed Address')
         verbose_name_plural = (u"Allowed Addresses")
 
     def __str__(self):
-        return self.ip
-
-    def __unicode__(self):
-        return self.ip
-
+        string = "Ip:" + self.ip + ",  "
+        string = string + "Local: " + self.local
+        return string
 
 class ThermoInfo(models.Model):
     temperature = models.FloatField(verbose_name="Temperature")
-    local = models.CharField(verbose_name="Local", max_length=150)
     device_ip = models.ForeignKey(
         AllowedAddress,
-        verbose_name=u"Device IP",
+        verbose_name=u"Device",
         related_name="thermo_info")
     capture_date = models.DateTimeField(
         verbose_name="Capture Date", default=timezone.now)
@@ -58,9 +57,8 @@ class ThermoInfo(models.Model):
             self._meta.get_field("temperature").verbose_name.title()
         string = string + ":" + str(self.temperature)
         string = string + ", " + \
-            self._meta.get_field("local").verbose_name.title()
-        string = string + ":" + self.local
-
+            self._meta.get_field("device_ip").verbose_name.title()
+        string = string + ":" + str(self.device_ip)
         return string
 
 

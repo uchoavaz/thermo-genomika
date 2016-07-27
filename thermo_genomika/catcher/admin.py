@@ -6,19 +6,24 @@ from .models import ThermoLog
 
 
 class ThermoInfoAdmin(admin.ModelAdmin):
-    search_fields = ['local', 'capture_date', 'temperature', 'device_ip__ip']
+    search_fields = ['capture_date', 'temperature', 'device_ip__ip', 'device_ip__local']
     list_display = (
         'temperature',
-        'local',
         'device_ip',
         'capture_date'
     )
 
 
 class AllowedAddressAdmin(admin.ModelAdmin):
-    search_fields = ['ip', 'is_active', 'measure', 'max_temperature', 'days_to_delete']
+    search_fields = [
+        'ip',
+        'local',
+        'is_active',
+        'measure', 'max_temperature', 'days_to_delete'
+    ]
     list_display = (
         'ip',
+        'local',
         'max_temperature',
         'days_to_delete',
         'measure',

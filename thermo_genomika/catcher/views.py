@@ -18,12 +18,8 @@ class CatcherView(TemplateView):
         ip = get_ip(request)
         try:
             temperature = request.GET.get('temp')
-            local = request.GET.get('local')
             if temperature is None:
                 raise Exception("Temperature is not in request")
-
-            if local is None:
-                raise Exception("Local is not in request")
 
             temperature = float(temperature) / 1000
             log = 'Request received'
@@ -32,22 +28,22 @@ class CatcherView(TemplateView):
 
                 thermo_info = ThermoInfo.objects.create(
                     temperature=temperature,
-                    local=local,
                     device_ip=allowed_address
                 )
                 log = log + ", "'Data saved with success'
-                email_log = mail(thermo_info, local, temperature)
+                email_log = mail(
+                    thermo_info)
                 log = log + ", " + email_log
                 delete_log = delete_old_records(ip)
                 log = log + ", " + delete_log
             else:
-                log = log + ", " + "No device active"
+                log = log + ", " + "Ip not active"
 
         except ObjectDoesNotExist as err:
-            log = log + ", " + err
+            log = log + ", " + str(err)
 
         except TypeError as err:
-            log = log + ", " + err
+            log = log + ", " + str(err)
 
         except Exception as err:
             log = log + ", " + ("Error:" + str(err))

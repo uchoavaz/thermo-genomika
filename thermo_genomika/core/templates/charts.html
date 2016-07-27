@@ -44,14 +44,99 @@
 </script>
 
 <div class="container">
-    <div class="col-sm-3 col-sm-4">
-        <label for="exampleInputEmail1">Data de início</label>
-        <input type="text" class="form-control" id="start_date" placeholder="Text input">
-        <label for="exampleInputEmail1">Data de fim</label>
-        <input type="text" class="form-control" placeholder="Text input">
-        <br>
-        <br>
-    </div>
+    <form  action="" method="get">
+        <div class="col-sm-3 col-sm-4">
+            <label for="exampleInputEmail1">Local</label>
+            <select name="local" multiple class="form-control">
+              {% for room in room_list %}
+                <option value={{room.pk}}>{{room.local}}</option>
+              {% endfor %}
+            </select>
+            <label for="exampleInputEmail1">Data início</label>
+            <input type="text" class="form-control" id="start_date" placeholder="">
+            <label for="exampleInputEmail1">Data fim</label>
+            <input type="text" class="form-control" id="end_date" placeholder="">
+            <br>
+            <button type="submit" class="btn btn-primary btn btn-default btn-lg">Filtar</button>
+        </div>
+
+
+
+        <div class="container">
+            <div class="col-md-4">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-bar-chart fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div>Temperaturas Aferidas</div>
+                                <div class="huge"></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-info fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div>Última Temperatura Aferida</div>
+                                <div class="huge"></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-red">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-fire fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div>Máxima Registrada</div>
+                                <div class="huge"></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-cube fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div>Mínima Registrada</div>
+                                <div class="huge">{{my_machines}}</div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
 </div>
 <div class="container">
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
