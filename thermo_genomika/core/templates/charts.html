@@ -17,7 +17,7 @@
                 text: 'Registro de Temperatura'
             },
             subtitle: {
-                text: '{{room}}'
+                text: '{{local_name}}'
             },
             xAxis: {
                 categories: date_list
@@ -36,7 +36,7 @@
                 }
             },
             series: [{
-                name: '{{room}}',
+                name: '{{local_name}}',
                 data: temp_list
             }]
         });
@@ -46,18 +46,20 @@
 <div class="container">
     <form  action="" method="get">
         <div class="col-sm-3 col-sm-4">
-            <label for="exampleInputEmail1">Local</label>
-            <select name="local" multiple class="form-control">
+            <label for="exampleInputEmail1">Local do Thermo</label>
+            <select name="local_pk" multiple class="form-control">
               {% for room in room_list %}
                 <option value={{room.pk}}>{{room.local}}</option>
               {% endfor %}
             </select>
             <label for="exampleInputEmail1">Data início</label>
-            <input type="text" class="form-control" id="start_date" placeholder="">
+            <input type="text" name='start_date' class="form-control" id="start_date" placeholder="">
             <label for="exampleInputEmail1">Data fim</label>
-            <input type="text" class="form-control" id="end_date" placeholder="">
+            <input type="text" name='end_date' class="form-control" id="end_date" placeholder="">
             <br>
-            <button type="submit" class="btn btn-primary btn btn-default btn-lg">Filtar</button>
+            <button type="submit" class="btn btn-primary btn btn-default btn-lg">Filtrar</button>
+            <br>
+            <br>
         </div>
 
 
@@ -72,7 +74,7 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Temperaturas Aferidas</div>
-                                <div class="huge"></div>
+                                <div class="huge">{{qtd_temp}}</div>
                                 
                             </div>
                         </div>
@@ -90,7 +92,7 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Última Temperatura Aferida</div>
-                                <div class="huge"></div>
+                                <div class="huge">{{last_temp}}</div>
                                 
                             </div>
                         </div>
@@ -107,7 +109,7 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Máxima Registrada</div>
-                                <div class="huge"></div>
+                                <div class="huge">{{max_temp}}</div>
                                 
                             </div>
                         </div>
@@ -125,7 +127,7 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Mínima Registrada</div>
-                                <div class="huge">{{my_machines}}</div>
+                                <div class="huge">{{min_temp}}</div>
                                 
                             </div>
                         </div>
