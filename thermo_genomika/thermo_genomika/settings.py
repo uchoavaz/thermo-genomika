@@ -85,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'thermo_genomika',
         'USER': 'postgres',
-        'PASSWORD': '123',
+        'PASSWORD': 'g3n0m1k@',
         'HOST': 'localhost',
         'PORT': '5432',
     }

@@ -5,15 +5,15 @@
 {% block content %}
             <div class="row">
                 <div class="col-md-4">
-                    <div class="panel panel-red">
+                    <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-3">
-                                    <i class="fa fa-envelope fa-5x"></i>
+                                    <i class="fa fa-tags fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
                                     <div>Thermos Cadastrados</div>
-                                    <div class="huge">{{my_machines}}</div>
+                                    <div class="huge">{{registered_thermos}}</div>
                                     
                                 </div>
                             </div>
@@ -22,30 +22,30 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="panel panel-green">
+                    <div class="panel panel-yellow">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-3">
-                                    <i class="fa fa-dollar fa-5x"></i>
+                                    <i class="fa fa-bar-chart fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div>Temperaturas Aferidas</div>
-                                    <div class="huge">{{my_cash}}</div>
+                                    <div> Total de Temperaturas Aferidas</div>
+                                    <div class="huge">{{total_temp}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="panel panel-green">
+                    <div class="panel panel-red">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-3">
-                                    <i class="fa fa-dollar fa-5x"></i>
+                                    <i class="fa fa-exclamation-triangle fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div>Temperaturas Acima do Normal</div>
-                                    <div class="huge">{{my_cash}}</div>
+                                    <div>Aferições não permitidas</div>
+                                    <div class="huge">{{qtd_not_allowed_temp}}</div>
                                 </div>
                             </div>
                         </div>

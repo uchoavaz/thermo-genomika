@@ -6,7 +6,7 @@ from .models import ThermoInfo
 from .models import AllowedAddress
 from .models import ThermoLog
 from ipware.ip import get_ip
-from mailer.tasks import mail
+from mailer.tasks import warn_mail
 from .tasks import delete_old_records
 
 
@@ -31,7 +31,7 @@ class CatcherView(TemplateView):
                     device_ip=allowed_address
                 )
                 log = log + ", "'Data saved with success'
-                email_log = mail(
+                email_log = warn_mail(
                     thermo_info)
                 log = log + ", " + email_log
                 delete_log = delete_old_records(ip)

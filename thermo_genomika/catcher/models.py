@@ -45,6 +45,8 @@ class ThermoInfo(models.Model):
         related_name="thermo_info")
     capture_date = models.DateTimeField(
         verbose_name="Capture Date", default=timezone.now)
+    allowed_temp = models.BooleanField(
+        verbose_name='Allowed Temperature ?', default=True)
 
     class Meta:
         verbose_name = (u'Thermo Info')

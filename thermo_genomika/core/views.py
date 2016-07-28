@@ -1,5 +1,6 @@
 
 # -*- coding: utf-8 -*-
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView
 from django.views.generic import ListView
@@ -9,10 +10,21 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Max
 from django.db.models import Min
+from datetime import datetime
 
-
-class HomeView(TemplateView):
+class HomeView(ListView):
     template_name = "home.html"
+    model = ThermoInfo
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['registered_thermos'] = AllowedAddress.objects.all().count()
+        context['total_temp'] = self.get_queryset().count()
+        context['qtd_not_allowed_temp'] = self.get_queryset().filter(
+            allowed_temp=False).count()
+        return context
+
+
 
 
 class ChartsView(ListView):
@@ -23,7 +35,6 @@ class ChartsView(ListView):
         context = super(ChartsView, self).get_context_data(**kwargs)
         request = self.request.GET
 
-        local_pk = request.get('local_pk')
         local_name = 'Genomika'
         date_list = []
         temp_list = []
@@ -31,13 +42,48 @@ class ChartsView(ListView):
         max_temp = '-'
         min_temp = '-'
         last_temp = '-'
+        start_date_begin = ''
+        end_date_begin = ''
 
         if self.request.GET:
+            local_pk = request.get('local_pk')
+            start_date = request.get('start_date')
+            end_date = request.get('end_date')
 
+            start_date_begin = start_date
+            end_date_begin = end_date
             try:
+
+                if start_date != '':
+                    try:
+                        start_date = datetime.strptime(start_date, "%d/%m/%Y")
+                    except (ValueError, UnicodeEncodeError):
+                        messages.error(
+                            self.request,
+                            u'Data início incorreta')
+                        start_date = ''
+
+                if end_date != '':
+                    try:
+                        end_date = datetime.strptime(end_date, "%d/%m/%Y")
+                    except (ValueError, UnicodeEncodeError):
+                        messages.error(
+                            self.request, 'Data fim incorreta')
+                        end_date = ''
+
+                if start_date != '' and end_date != '' \
+                        and (end_date - start_date).days < 0:
+                    raise Exception(
+                        u'Data fim maior que a data início')
+
                 allowed_address = AllowedAddress.objects.get(pk=int(local_pk))
                 queryset = self.get_queryset().filter(
-                    device_ip=allowed_address).order_by('capture_date')
+                    device_ip=allowed_address)
+                if start_date != '':
+                    queryset = queryset.filter(capture_date__gte=start_date)
+                if end_date != '':
+                    queryset = queryset.filter(capture_date__lte=end_date)
+                queryset = queryset.order_by('capture_date')
                 local_name = allowed_address.local
                 date_list = self.get_date_list_string(queryset)
                 temp_list = self.get_temp_list_string(queryset)
@@ -67,7 +113,12 @@ class ChartsView(ListView):
             except TypeError:
                 messages.error(
                     self.request, 'Insira um Local')
+            except Exception as err:
+                messages.error(
+                    self.request, err)
 
+        context['start_date'] = start_date_begin
+        context['end_date'] = end_date_begin
         context['last_temp'] = last_temp
         context['min_temp'] = min_temp
         context['max_temp'] = max_temp

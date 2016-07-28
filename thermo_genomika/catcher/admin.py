@@ -6,10 +6,13 @@ from .models import ThermoLog
 
 
 class ThermoInfoAdmin(admin.ModelAdmin):
-    search_fields = ['capture_date', 'temperature', 'device_ip__ip', 'device_ip__local']
+    search_fields = [
+        'allowed_temp',
+        'capture_date', 'temperature', 'device_ip__ip', 'device_ip__local']
     list_display = (
         'temperature',
         'device_ip',
+        'allowed_temp',
         'capture_date'
     )
 
