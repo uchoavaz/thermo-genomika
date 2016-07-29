@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import TemplateView
+from django.http import HttpResponse
 from django.views.generic import ListView
 from catcher.models import ThermoInfo
 from catcher.models import AllowedAddress
@@ -11,6 +11,33 @@ from django.utils import timezone
 from django.db.models import Max
 from django.db.models import Min
 from datetime import datetime
+import csv
+
+
+def correct_date_get_request(request, start_date, end_date):
+    try:
+        start_date = datetime.strptime(start_date, "%d/%m/%Y")
+    except (ValueError, UnicodeEncodeError):
+        messages.error(
+            request,
+            u'Data início incorreta')
+        start_date = ''
+
+    if end_date != '':
+        try:
+            end_date = datetime.strptime(end_date, "%d/%m/%Y")
+        except (ValueError, UnicodeEncodeError):
+            messages.error(
+                request, 'Data fim incorreta')
+            end_date = ''
+
+    if start_date != '' and end_date != '' \
+            and (end_date - start_date).days < 0:
+        raise Exception(
+            u'Data fim maior que a data início')
+
+    return {'start_date': start_date, 'end_date': end_date}
+
 
 class HomeView(ListView):
     template_name = "home.html"
@@ -23,8 +50,6 @@ class HomeView(ListView):
         context['qtd_not_allowed_temp'] = self.get_queryset().filter(
             allowed_temp=False).count()
         return context
-
-
 
 
 class ChartsView(ListView):
@@ -45,7 +70,7 @@ class ChartsView(ListView):
         start_date_begin = ''
         end_date_begin = ''
 
-        if self.request.GET:
+        if request:
             local_pk = request.get('local_pk')
             start_date = request.get('start_date')
             end_date = request.get('end_date')
@@ -54,27 +79,10 @@ class ChartsView(ListView):
             end_date_begin = end_date
             try:
 
-                if start_date != '':
-                    try:
-                        start_date = datetime.strptime(start_date, "%d/%m/%Y")
-                    except (ValueError, UnicodeEncodeError):
-                        messages.error(
-                            self.request,
-                            u'Data início incorreta')
-                        start_date = ''
-
-                if end_date != '':
-                    try:
-                        end_date = datetime.strptime(end_date, "%d/%m/%Y")
-                    except (ValueError, UnicodeEncodeError):
-                        messages.error(
-                            self.request, 'Data fim incorreta')
-                        end_date = ''
-
-                if start_date != '' and end_date != '' \
-                        and (end_date - start_date).days < 0:
-                    raise Exception(
-                        u'Data fim maior que a data início')
+                get = correct_date_get_request(
+                    self.request, start_date, end_date)
+                start_date = get['start_date']
+                end_date = get['end_date']
 
                 allowed_address = AllowedAddress.objects.get(pk=int(local_pk))
                 queryset = self.get_queryset().filter(
@@ -148,5 +156,69 @@ class ChartsView(ListView):
         return temp_list
 
 
+class ReportView(ListView):
+    template_name = "reports.html"
+    model = ThermoInfo
+
+    def generate_csv(self, file_name, queryset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = \
+            'attachment; filename="{0}_thermo_report_{1}.csv"'.format(
+                file_name, datetime.now().strftime("%d_%m_%Y"))
+
+        writer = csv.writer(response, delimiter='|')
+        header = [
+            ThermoInfo._meta.get_field("temperature").verbose_name.title(),
+            ThermoInfo._meta.get_field("allowed_temp").verbose_name.title(),
+            ThermoInfo._meta.get_field("device_ip").verbose_name.title(),
+            ThermoInfo._meta.get_field("capture_date").verbose_name.title()
+        ]
+        writer.writerow(header)
+
+        for line in queryset:
+            writer.writerow([
+                str(line.temperature),
+                line.allowed_temp,
+                line.device_ip,
+                timezone.get_current_timezone().normalize(line.capture_date)
+            ])
+        return response
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if self.request.GET:
+            local_pk = self.request.GET.get('local_pk')
+            try:
+
+                allowed_address = AllowedAddress.objects.get(pk=int(local_pk))
+                queryset = self.get_queryset().filter(
+                    device_ip=allowed_address)
+                queryset = queryset.order_by('capture_date')
+
+                return self.generate_csv(allowed_address.local, queryset)
+            except (ValueError, ObjectDoesNotExist):
+                messages.error(
+                    self.request, 'Local inexistente')
+            except TypeError:
+                messages.error(
+                    self.request, 'Insira um Local')
+            except Exception as err:
+                messages.error(
+                    self.request, err)
+            return super(
+                ReportView, self).dispatch(
+                self.request, *args, **kwargs)
+
+        else:
+            return super(
+                ReportView, self).dispatch(
+                self.request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportView, self).get_context_data(**kwargs)
+        context['room_list'] = AllowedAddress.objects.all().distinct('local')
+        return context
+
+report = ReportView.as_view()
 home = HomeView.as_view()
 charts = ChartsView.as_view()

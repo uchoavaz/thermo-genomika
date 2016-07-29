@@ -33,9 +33,16 @@ class AllowedAddress(models.Model):
         verbose_name_plural = (u"Allowed Addresses")
 
     def __str__(self):
-        string = "Ip:" + self.ip + ",  "
-        string = string + "Local: " + self.local
+        string = self._meta.get_field("ip").verbose_name.title() \
+            + ":" + self.ip + ", "
+        string = string + self._meta.get_field("local").verbose_name.title() \
+            + ":" + self.local + ","
+        string = string + self._meta.get_field(
+            "max_temperature").verbose_name.title() \
+            + ":" + str(self.max_temperature) \
+            + " " + self.get_measure_display().encode('ascii', 'ignore')
         return string
+
 
 class ThermoInfo(models.Model):
     temperature = models.FloatField(verbose_name="Temperature")
@@ -54,11 +61,11 @@ class ThermoInfo(models.Model):
 
     def __str__(self):
         string = self._meta.get_field("capture_date").verbose_name.title()
-        string = string + ": " + str(self.capture_date)
-        string = string + ", " + \
+        string = string + ":" + str(self.capture_date)
+        string = string + "," + \
             self._meta.get_field("temperature").verbose_name.title()
         string = string + ":" + str(self.temperature)
-        string = string + ", " + \
+        string = string + "," + \
             self._meta.get_field("device_ip").verbose_name.title()
         string = string + ":" + str(self.device_ip)
         return string

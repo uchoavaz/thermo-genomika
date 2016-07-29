@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
+from decouple import config
 import os
+
 
 from django.contrib.messages import constants as message_constants
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
@@ -82,22 +83,21 @@ WSGI_APPLICATION = 'thermo_genomika.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'thermo_genomika',
-        'USER': 'postgres',
-        'PASSWORD': 'g3n0m1k@',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': config('EMAIL_ENGINE'),
+        'NAME': config('EMAIL_NAME'),
+        'USER': config('EMAIL_USER'),
+        'PASSWORD': config('EMAIL_PASSWORD'),
+        'HOST': config('EMAIL_HOST'),
+        'PORT': config('EMAIL_PORT'),
     }
 }
 
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'notificacoes@genomika.com.br'
-EMAIL_HOST_PASSWORD = 'g3n0m1k@'
-EMAIL_PORT = 587
-CONTACT_EMAIL = 'notificacoes@genomika.com.br'
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT')
+CONTACT_EMAIL = config('CONTACT_EMAIL')
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
