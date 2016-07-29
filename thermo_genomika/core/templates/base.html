@@ -124,11 +124,12 @@
   margin-top: 15px;
 }
 </style>
-
-  <div class="navbar navbar-inverse navbar-fixed-bottom" id="footer_color" role="navigation">
+  {% if system_info %}
+    <div class="navbar navbar-inverse navbar-fixed-bottom" id="footer_color" role="navigation">
       <center>
-        <p id="footer_text">©GENOMIKA - Designed by: João Uchoa</p>
+        <p id="footer_text">{{brand}} - Designed by: {{designed_by}} - {{version}}</p>
       </center>
     </div>
+  {% endif %}
   </body>
 </html>

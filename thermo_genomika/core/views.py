@@ -4,8 +4,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.generic import ListView
+from django.views.generic import View
 from catcher.models import ThermoInfo
 from catcher.models import AllowedAddress
+from core.models import SystemInfo
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Max
@@ -15,13 +17,14 @@ import csv
 
 
 def correct_date_get_request(request, start_date, end_date):
-    try:
-        start_date = datetime.strptime(start_date, "%d/%m/%Y")
-    except (ValueError, UnicodeEncodeError):
-        messages.error(
-            request,
-            u'Data início incorreta')
-        start_date = ''
+    if start_date != '':
+        try:
+            start_date = datetime.strptime(start_date, "%d/%m/%Y")
+        except (ValueError, UnicodeEncodeError):
+            messages.error(
+                request,
+                u'Data início incorreta')
+            start_date = ''
 
     if end_date != '':
         try:
@@ -39,7 +42,28 @@ def correct_date_get_request(request, start_date, end_date):
     return {'start_date': start_date, 'end_date': end_date}
 
 
-class HomeView(ListView):
+class SystemInfoView(ListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(SystemInfoView, self).get_context_data(**kwargs)
+        system_info = SystemInfo.objects.all()
+        context['system_info'] = True
+        try:
+            length = len(system_info)
+            last_system_info = system_info[length - 1]
+            context['brand'] = last_system_info.brand
+            context['designed_by'] = last_system_info.designed_by
+            context['version'] = last_system_info.version
+        except AssertionError:
+            context['brand'] = ''
+            context['designed_by'] = ''
+            context['version'] = ''
+            context['system_info'] = False
+
+        return context
+
+
+class HomeView(SystemInfoView, ListView):
     template_name = "home.html"
     model = ThermoInfo
 
@@ -52,7 +76,7 @@ class HomeView(ListView):
         return context
 
 
-class ChartsView(ListView):
+class ChartsView(SystemInfoView, ListView):
     template_name = "charts.html"
     model = ThermoInfo
 
@@ -64,9 +88,12 @@ class ChartsView(ListView):
         date_list = []
         temp_list = []
         qtd_temp = 0
-        max_temp = '-'
-        min_temp = '-'
+        max_temp_treat = '-'
+        min_temp_treat = '-'
+        max_temp_date = ''
+        min_temp_date = ''
         last_temp = '-'
+        last_temp_date = ''
         start_date_begin = ''
         end_date_begin = ''
 
@@ -98,20 +125,38 @@ class ChartsView(ListView):
                 qtd_temp = queryset.count()
 
                 measure = allowed_address.get_measure_display()
-                temp = queryset.aggregate(
-                    Max('temperature'))['temperature__max']
-                if temp is not None:
-                    max_temp = str(temp) + " " + measure
 
-                temp = queryset.aggregate(
+                max_temp = queryset.aggregate(
+                    Max('temperature'))['temperature__max']
+                if max_temp is not None:
+                    max_temp_treat = str(max_temp) + " " + measure
+
+                min_temp = queryset.aggregate(
                     Min('temperature'))['temperature__min']
 
-                if temp is not None:
-                    min_temp = str(temp) + " " + measure
+                if min_temp is not None:
+                    min_temp_treat = str(min_temp) + " " + measure
 
                 try:
-                    last_position = queryset[len(queryset) - 1]
+                    min_temp_length = queryset.filter(
+                        temperature=min_temp).count()
+                    max_temp_length = queryset.filter(
+                        temperature=max_temp).count()
+                    last_position = queryset[queryset.count() - 1]
                     last_temp = str(last_position.temperature) + " " + measure
+                    min_temp_date = queryset.filter(
+                        temperature=min_temp)[min_temp_length - 1].capture_date
+                    min_temp_date = timezone.get_current_timezone().normalize(
+                        min_temp_date)
+                    max_temp_date = queryset.filter(
+                        temperature=max_temp)[max_temp_length - 1].capture_date
+                    max_temp_date = timezone.get_current_timezone().normalize(
+                        max_temp_date)
+                    last_temp_date = timezone.get_current_timezone().normalize(
+                        last_position.capture_date)
+                    last_temp_date = last_temp_date.strftime('%d-%m-%Y %H:%M')
+                    min_temp_date = min_temp_date.strftime('%d-%m-%Y %H:%M')
+                    max_temp_date = max_temp_date.strftime('%d-%m-%Y %H:%M')
                 except AssertionError:
                     pass
 
@@ -128,8 +173,11 @@ class ChartsView(ListView):
         context['start_date'] = start_date_begin
         context['end_date'] = end_date_begin
         context['last_temp'] = last_temp
-        context['min_temp'] = min_temp
-        context['max_temp'] = max_temp
+        context['last_temp_date'] = last_temp_date
+        context['min_temp'] = min_temp_treat
+        context['max_temp'] = max_temp_treat
+        context['min_temp_date'] = min_temp_date
+        context['max_temp_date'] = max_temp_date
         context['qtd_temp'] = qtd_temp
         context['local_name'] = local_name
         context['date_list'] = date_list
@@ -156,7 +204,7 @@ class ChartsView(ListView):
         return temp_list
 
 
-class ReportView(ListView):
+class ReportView(SystemInfoView, ListView):
     template_name = "reports.html"
     model = ThermoInfo
 

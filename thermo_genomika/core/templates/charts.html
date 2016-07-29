@@ -4,48 +4,59 @@
 
 
 {% block content %}
-        <script type="text/javascript">
-            var date_list = {{date_list|safe}}
-            var temp_list = {{temp_list|safe}}
-            $(function () {
-                $('#container').highcharts({
-                    title: {
-                        text: 'Registro de Temperatura',
-                        x: -20 //center
-                    },
-                    subtitle: {
-                        text: '{{local_name}}',
-                        x: -20
-                    },
-                    xAxis: {
-                        categories: date_list
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Temperatura (°C)'
-                        },
-                        plotLines: [{
-                            value: 0,
-                            width: 1,
-                            color: '#808080'
-                        }]
-                    },
-                    tooltip: {
-                        valueSuffix: '°C'
-                    },
-                    legend: {
-                        layout: 'vertical',
-                        align: 'right',
-                        verticalAlign: 'middle',
-                        borderWidth: 0
-                    },
-                    series: [{
-                        name: '{{local_name}}',
-                        data: temp_list
-                    },]
-                });
-            });
-        </script>
+<style type="text/css">
+    #temp_date{
+        font-size: 12px;
+    }
+    #qtd_temp{
+        font-size: 52px;
+    }
+    #temp{
+        font-size: 38px;
+    }
+</style>
+<script type="text/javascript">
+    var date_list = {{date_list|safe}}
+    var temp_list = {{temp_list|safe}}
+    $(function () {
+        $('#container').highcharts({
+            title: {
+                text: 'Registro de Temperatura',
+                x: -20 //center
+            },
+            subtitle: {
+                text: '{{local_name}}',
+                x: -20
+            },
+            xAxis: {
+                categories: date_list
+            },
+            yAxis: {
+                title: {
+                    text: 'Temperatura (°C)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: '°C'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                name: '{{local_name}}',
+                data: temp_list
+            },]
+        });
+    });
+</script>
 
 <div class="container">
     <form  action="" method="get">
@@ -77,7 +88,7 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Temperaturas Aferidas</div>
-                                <div class="huge">{{qtd_temp}}</div>
+                                <div class="huge" {% if last_temp_date %} id="qtd_temp"{% endif %}>{{qtd_temp}}</div>
                                 
                             </div>
                         </div>
@@ -95,7 +106,9 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Última Temperatura Aferida</div>
-                                <div class="huge">{{last_temp}}</div>
+                                <div class="huge" {% if last_temp_date %} id="temp" {% endif %}>{{last_temp}}</div>
+                                <span id="temp_date">{{last_temp_date}}</span>
+
                                 
                             </div>
                         </div>
@@ -112,8 +125,9 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Máxima Registrada</div>
-                                <div class="huge">{{max_temp}}</div>
-                                
+                                <div class="huge" {% if last_temp_date %} id="temp" {% endif %}>{{max_temp}}</div>
+                                <span id="temp_date">{{max_temp_date}}</span>
+
                             </div>
                         </div>
                     </div>
@@ -130,8 +144,9 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div>Mínima Registrada</div>
-                                <div class="huge">{{min_temp}}</div>
-                                
+                                <div class="huge" {% if last_temp_date %} id="temp" {% endif %}>{{min_temp}}</div>
+                                <span id="temp_date">{{min_temp_date}}</span>
+                            
                             </div>
                         </div>
                     </div>
@@ -145,7 +160,6 @@
 </div>
 <div class="container">
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-    <button type="button" class="btn btn-default">Default button</button>
 
 </div>
 

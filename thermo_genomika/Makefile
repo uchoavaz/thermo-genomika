@@ -10,7 +10,11 @@ setup:
 	./manage.py migrate
 
 run:
-	./manage.py runserver --insecure
+	./manage.py runserver
+
+run local:
+	./manage.py runserver 0.0.0.0:8000
+
 
 restart:
 
